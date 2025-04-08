@@ -5,13 +5,16 @@
   "scripts": {
     "get": "bunx cdktf-cli get",
     "synth": "bunx cdktf-cli synth",
+    "diff": "bunx cdktf-cli diff",
     "deploy": "bunx cdktf-cli deploy",
     "watch": "tsc -w",
     "test": "bun test",
-    "test:watch": "bun test --watch"
+    "test:watch": "bun test --watch",
+    "format": "prettier \"src/**/*\" --write"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "prettier": "^3.5.3",
     "type-fest": "^4.33.0"
   },
   "peerDependencies": {
