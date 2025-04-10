@@ -1,6 +1,8 @@
+import { MssqlServer } from "@cdktf/provider-azurerm/lib/mssql-server";
 import { ResourceGroup } from "@cdktf/provider-azurerm/lib/resource-group";
 import { ServicePlan } from "@cdktf/provider-azurerm/lib/service-plan";
 import { WindowsWebApp } from "@cdktf/provider-azurerm/lib/windows-web-app";
+import { Fn, TerraformVariable, VariableType } from "cdktf";
 import type { Construct } from "constructs";
 import {
   Terrakit,
@@ -28,11 +30,61 @@ export const createController = (
 ) => {
   return new TerrakitController(stack, stack.providers)
     .add({
+      id: "terraformVariableMssqlServerAdministratorLogin",
+      type: TerraformVariable,
+      config: () => ({}),
+    })
+    .add({
+      id: "terraformVariableMssqlServerAzureadAdministrator",
+      type: TerraformVariable,
+      config: () => ({
+        description: "Azure AD Administrator for SQL Server",
+        type: VariableType.object({
+          azureadAuthenticationOnly: VariableType.BOOL,
+          loginUsername: VariableType.STRING,
+          objectId: VariableType.STRING,
+          tenantId: VariableType.STRING,
+        }),
+      }),
+    })
+    .add({
       id: "resourceGroup",
       type: ResourceGroup,
       config: () => ({
         name: `rg-${stack.options.identifier.env}-${stack.options.identifier.tenant}`,
         location: "Central US",
+      }),
+    })
+    .add({
+      id: "mssqlServer",
+      type: MssqlServer,
+      config: ({ outputs }) => ({
+        name: `sql-${stack.options.identifier.env}-${stack.options.identifier.tenant}`,
+        location: outputs.resourceGroup.location,
+        resourceGroupName: outputs.resourceGroup.name,
+        administratorLogin:
+          outputs.terraformVariableMssqlServerAdministratorLogin.value, // var.utility_cnp_mssql_server_administrator_login
+        administratorLoginPassword: "", // TODO: module.sensitive_var.utility_cnp_mssql_server_administrator_login_password
+        version: "12.0",
+        minimumTlsVersion: "1.2",
+        azureadAdministrator: {
+          azureadAuthenticationOnly: Fn.lookup(
+            outputs.terraformVariableMssqlServerAzureadAdministrator.value,
+            "azureadAuthenticationOnly"
+          ), // var.mssql_server_azuread_administrator.azuread_authentication_only
+          loginUsername: Fn.lookup(
+            outputs.terraformVariableMssqlServerAzureadAdministrator.value,
+            "loginUsername"
+          ), // var.mssql_server_azuread_administrator.login_username
+          objectId: Fn.lookup(
+            outputs.terraformVariableMssqlServerAzureadAdministrator.value,
+            "objectId"
+          ), // var.mssql_server_azuread_administrator.object_id
+          tenantId: Fn.lookup(
+            outputs.terraformVariableMssqlServerAzureadAdministrator.value,
+            "tenantId"
+          ), // var.mssql_server_azuread_administrator.tenant_id
+        },
       }),
     })
     .add({
