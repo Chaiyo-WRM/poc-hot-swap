@@ -9,9 +9,9 @@ const app = new App();
 createTerraformVariableStack1(app, {
   identifier: {
     env: "terraformVariableStack1",
-    tenant: "terraformVariableStack1",
-    slot: "terraformVariableStack1",
-    site: "terraformVariableStack1",
+    tenant: "",
+    slot: "",
+    site: "",
   },
   providers: {
     defaultAzureProvider: (scope) =>
@@ -26,9 +26,9 @@ createTerraformVariableStack1(app, {
 createTerraformVariableStack2(app, {
   identifier: {
     env: "terraformVariableStack2",
-    tenant: "terraformVariableStack2",
-    slot: "terraformVariableStack2",
-    site: "terraformVariableStack2",
+    tenant: "",
+    slot: "",
+    site: "",
   },
   providers: {
     defaultAzureProvider: (scope) =>
