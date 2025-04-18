@@ -26,6 +26,7 @@ const createController = (stack: TerrakitStack<TerrakitStackConfig>) => {
         location: outputs.location.value,
       }),
     });
+
   return contoller;
 };
 
