@@ -1,8 +1,26 @@
 import { App } from "cdktf";
 import { createMyStack } from "./MyStackNew";
 import { AzurermProvider } from "@cdktf/provider-azurerm/lib/provider";
+import { createTerraformVariableStack1 } from "./terraform-variable-stack-1";
 
 const app = new App();
+
+createTerraformVariableStack1(app, {
+  identifier: {
+    env: "terraformVariableStack1",
+    tenant: "terraformVariableStack1",
+    slot: "terraformVariableStack1",
+    site: "terraformVariableStack1",
+  },
+  providers: {
+    defaultAzureProvider: (scope) =>
+      new AzurermProvider(scope, "azurerm", {
+        resourceProviderRegistrations: "core",
+        subscriptionId: "0237f4be-418c-400e-ac3c-751807b4267b",
+        features: [{}],
+      }),
+  },
+}).build();
 
 const myStack = createMyStack(app, {
   identifier: {
