@@ -17,7 +17,7 @@ const createController = (stack: TerrakitStack<TerrakitStackConfig>) => {
   const contoller = new TerrakitController(stack, stack.providers).add({
     id: "resourceGroup",
     type: ResourceGroup,
-    config: ({ outputs }) => ({
+    config: () => ({
       name: "rg-example",
       location: location.value,
     }),
