@@ -28,26 +28,25 @@ export interface MyTerrakitStackConfig {
 export const createController = (
   stack: TerrakitStack<MyTerrakitStackConfig>
 ) => {
-  const terraformVariableMssqlServerAdministratorLogin = new TerraformVariable(
+  const mssqlServerAdministratorLogin = new TerraformVariable(
     stack,
-    "terraformVariableMssqlServerAdministratorLogin",
+    "mssqlServerAdministratorLogin",
     {}
   );
 
-  const terraformVariableMssqlServerAzureadAdministrator =
-    new TerraformVariable(
-      stack,
-      "terraformVariableMssqlServerAzureadAdministrator",
-      {
-        description: "Azure AD Administrator for SQL Server",
-        type: VariableType.object({
-          azureadAuthenticationOnly: VariableType.BOOL,
-          loginUsername: VariableType.STRING,
-          objectId: VariableType.STRING,
-          tenantId: VariableType.STRING,
-        }),
-      }
-    );
+  const mssqlServerAzureadAdministrator = new TerraformVariable(
+    stack,
+    "mssqlServerAzureadAdministrator",
+    {
+      description: "Azure AD Administrator for SQL Server",
+      type: VariableType.object({
+        azureadAuthenticationOnly: VariableType.BOOL,
+        loginUsername: VariableType.STRING,
+        objectId: VariableType.STRING,
+        tenantId: VariableType.STRING,
+      }),
+    }
+  );
 
   return new TerrakitController(stack, stack.providers)
     .add({
@@ -65,26 +64,25 @@ export const createController = (
         name: `sql-${stack.options.identifier.env}-${stack.options.identifier.tenant}`,
         location: outputs.resourceGroup.location,
         resourceGroupName: outputs.resourceGroup.name,
-        administratorLogin:
-          terraformVariableMssqlServerAdministratorLogin.value, // var.utility_cnp_mssql_server_administrator_login
+        administratorLogin: mssqlServerAdministratorLogin.value, // var.utility_cnp_mssql_server_administrator_login
         administratorLoginPassword: "", // TODO: module.sensitive_var.utility_cnp_mssql_server_administrator_login_password
         version: "12.0",
         minimumTlsVersion: "1.2",
         azureadAdministrator: {
           azureadAuthenticationOnly: Fn.lookup(
-            terraformVariableMssqlServerAzureadAdministrator.value,
+            mssqlServerAzureadAdministrator.value,
             "azureadAuthenticationOnly"
           ), // var.mssql_server_azuread_administrator.azuread_authentication_only
           loginUsername: Fn.lookup(
-            terraformVariableMssqlServerAzureadAdministrator.value,
+            mssqlServerAzureadAdministrator.value,
             "loginUsername"
           ), // var.mssql_server_azuread_administrator.login_username
           objectId: Fn.lookup(
-            terraformVariableMssqlServerAzureadAdministrator.value,
+            mssqlServerAzureadAdministrator.value,
             "objectId"
           ), // var.mssql_server_azuread_administrator.object_id
           tenantId: Fn.lookup(
-            terraformVariableMssqlServerAzureadAdministrator.value,
+            mssqlServerAzureadAdministrator.value,
             "tenantId"
           ), // var.mssql_server_azuread_administrator.tenant_id
         },
